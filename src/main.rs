@@ -23,6 +23,8 @@ mod cli {
     #[derive(Parser, Debug)]
     #[clap(version, about)]
     pub struct Args {
+        #[clap(long, env, default_value_t = 1000)]
+        pub stats_timeout_ms: u64,
         /// Адрес, на котором будет запущен сервис.
         #[clap(long, env, default_value_t = SocketAddr::from(([0, 0, 0, 0], 8080)))]
         pub listen_addr: SocketAddr,
@@ -42,7 +44,7 @@ async fn main() {
 
     tokio::spawn(async move {
         loop {
-            time::sleep(Duration::from_secs(5)).await;
+            time::sleep(Duration::from_millis(args.stats_timeout_ms)).await;
             print_request_statistics(&request_counts).await;
         }
     });
